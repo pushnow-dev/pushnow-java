@@ -65,6 +65,13 @@ public final class Client {
     public JSONObject authorize(JSONObject pending) {
         config = call("finishAuthorization", new JSONObject().put("pending", pending)); return config;
     }
+    public JSONObject beginAccountAuthorization(String apiURL, String accessToken, String name) {
+        return call("beginAccountAuthorization", new JSONObject()
+            .put("apiURL", apiURL).put("accessToken", accessToken).put("name", name));
+    }
+    public JSONObject authorizeAccount(JSONObject pending) {
+        config = call("finishAccountAuthorization", new JSONObject().put("pending", pending)); return config;
+    }
     public JSONObject recipients() { return call("recipients", new JSONObject()); }
     public JSONObject prepare(JSONObject notification) { return call("prepare", new JSONObject().put("notification", notification)); }
     public JSONObject send(JSONObject notification) { return call("send", new JSONObject().put("notification", notification)); }

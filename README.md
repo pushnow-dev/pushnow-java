@@ -23,20 +23,30 @@ beside the resulting application and install its npm dependencies separately.
 The JAR does not embed Node or the runtime. On Windows use Maven for compilation
 and change classpath separators from `:` to `;` in the example/test commands.
 
-## Authorize
+## Authorize With an Account Token
+
+```java
+Client client = new Client(Path.of("/absolute/path/to/runtime/main.js"), "", null);
+JSONObject pending = client.beginAccountAuthorization(
+    "https://api.pushnow.dev", accountAccessToken, "Java automation");
+System.out.println(pending.getJSONObject("authorization").getString("user_code"));
+System.out.println(pending.getString("fingerprint"));
+JSONObject config = client.authorizeAccount(pending); // Waits for trusted phone approval.
+```
+
+Imports are `dev.pushnow.Client`, `java.nio.file.Path`, `org.json.JSONObject`
+and `org.json.JSONArray`. Use an account access token from a signed-in app or
+trusted dashboard session. The token only creates the account-bound
+authorization; it cannot encrypt or send messages by itself. Never print the
+whole pending/config objects; they contain private credentials.
+
+Manual fingerprint authorization remains available for CLI/offline setups:
 
 ```java
 Client client = new Client(Path.of("/absolute/path/to/runtime/main.js"), trustedRootFingerprint, null);
 JSONObject pending = client.beginAuthorization("https://api.pushnow.dev", "Java automation");
-System.out.println(pending.getJSONObject("authorization").getString("user_code"));
-System.out.println(pending.getString("fingerprint"));
-JSONObject config = client.authorize(pending); // Waits for trusted phone approval.
+JSONObject config = client.authorize(pending);
 ```
-
-Imports are `dev.pushnow.Client`, `java.nio.file.Path`, `org.json.JSONObject`
-and `org.json.JSONArray`. The pinned account-root fingerprint must be obtained
-independently, not calculated from an untrusted grant. Never print the whole
-pending/config objects; they contain private credentials.
 
 ## Notifications
 
@@ -75,7 +85,7 @@ still be resolved by retrying the saved envelope. Use one client per thread.
 ## Runnable Example
 
 ```sh
-export PUSHNOW_ROOT_FINGERPRINT='your independently verified 64-character root hash'
+export PUSHNOW_ACCESS_TOKEN='your signed-in account access token'
 java -cp target/test-classes:json-20250517.jar Example authorize
 java -cp target/test-classes:json-20250517.jar Example send
 ```

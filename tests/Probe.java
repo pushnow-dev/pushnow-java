@@ -7,9 +7,9 @@ import org.json.JSONArray;
 public class Probe {
     public static void main(String[] args) throws Exception {
         JSONObject input = new JSONObject(new String(System.in.readAllBytes(), StandardCharsets.UTF_8));
-        Client client = new Client(Path.of("runtime/main.js"), input.getString("rootFingerprint"), null);
-        JSONObject pending = client.beginAuthorization(input.getString("apiURL"), "Java integration");
-        client.authorize(pending);
+        Client client = new Client(Path.of("runtime/main.js"), "", null);
+        JSONObject pending = client.beginAccountAuthorization(input.getString("apiURL"), input.getString("accessToken"), "Java integration");
+        client.authorizeAccount(pending);
         JSONObject directory = client.recipients();
         JSONObject envelope = client.prepare(input.getJSONObject("notification"));
         JSONObject first = client.retry(envelope), second = client.retry(envelope);

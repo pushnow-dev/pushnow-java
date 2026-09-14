@@ -15,11 +15,11 @@ public class Example {
         Path configFile = Path.of("private-config.json"), outbox = Path.of("outbox.json");
         String root = System.getenv("PUSHNOW_ROOT_FINGERPRINT");
         if (args[0].equals("authorize")) {
-            Client client = new Client(Path.of("runtime/main.js"), root, null);
-            JSONObject pending = client.beginAuthorization("https://api.pushnow.dev", "Java automation");
+            Client client = new Client(Path.of("runtime/main.js"), "", null);
+            JSONObject pending = client.beginAccountAuthorization("https://api.pushnow.dev", System.getenv("PUSHNOW_ACCESS_TOKEN"), "Java automation");
             System.out.println("Approve code: " + pending.getJSONObject("authorization").getString("user_code"));
-            System.out.println("Compare sender fingerprint: " + pending.getString("fingerprint"));
-            save(configFile, client.authorize(pending));
+            System.out.println("Sender fingerprint: " + pending.getString("fingerprint"));
+            save(configFile, client.authorizeAccount(pending));
             System.out.println("Authorized. Private configuration stored locally.");
         } else if (args[0].equals("send")) {
             Client client = new Client(Path.of("runtime/main.js"), root, new JSONObject(Files.readString(configFile)));
