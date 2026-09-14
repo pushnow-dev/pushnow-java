@@ -26,7 +26,7 @@ and change classpath separators from `:` to `;` in the example/test commands.
 ## Authorize With an Account Token
 
 ```java
-Client client = new Client(Path.of("/absolute/path/to/runtime/main.js"), "", null);
+Client client = new Client(Path.of("/absolute/path/to/runtime/main.js"), null);
 JSONObject pending = client.beginAccountAuthorization(
     "https://api.pushnow.dev", accountAccessToken, "Java automation");
 System.out.println(pending.getJSONObject("authorization").getString("user_code"));
@@ -40,18 +40,10 @@ trusted dashboard session. The token only creates the account-bound
 authorization; it cannot encrypt or send messages by itself. Never print the
 whole pending/config objects; they contain private credentials.
 
-Manual fingerprint authorization remains available for CLI/offline setups:
-
-```java
-Client client = new Client(Path.of("/absolute/path/to/runtime/main.js"), trustedRootFingerprint, null);
-JSONObject pending = client.beginAuthorization("https://api.pushnow.dev", "Java automation");
-JSONObject config = client.authorize(pending);
-```
-
 ## Notifications
 
 ```java
-Client client = new Client(Path.of("/absolute/path/to/runtime/main.js"), trustedRootFingerprint, config);
+Client client = new Client(Path.of("/absolute/path/to/runtime/main.js"), config);
 JSONObject notification = new JSONObject()
     .put("title", "Build finished").put("body", "Your report is ready.").put("sound", "chime")
     .put("links", new JSONArray().put("https://example.com/build/123"))
@@ -70,7 +62,7 @@ Omit deviceIds to notify all eligible devices. Use a JSONArray of IDs from
 `pushEnabled=false` or an empty deviceIds array saves inbox-only.
 scheduledAt/expiresAt are timezone-qualified future ISO strings within 30 days.
 Sound accepts `default`, `silent` or `chime` as public routing metadata. Omit it
-to preserve legacy behavior. Silent keeps the visible alert without aps.sound;
+to use the default behavior. Silent keeps the visible alert without aps.sound;
 chime maps to the app's `pushnow-chime.wav`. JSONObject.NULL and unknown values
 fail with `INVALID_SOUND` before uploads. Sound never enters the encrypted body.
 

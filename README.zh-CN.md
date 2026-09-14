@@ -30,7 +30,7 @@ sh test.sh
 ## 使用账号 Token 授权
 
 ```java
-Client client = new Client(Path.of("/absolute/path/to/runtime/main.js"), "", null);
+Client client = new Client(Path.of("/absolute/path/to/runtime/main.js"), null);
 JSONObject pending = client.beginAccountAuthorization(
     "https://api.pushnow.dev", accountAccessToken, "Java automation");
 JSONObject config = client.authorizeAccount(pending);
@@ -38,18 +38,10 @@ JSONObject config = client.authorizeAccount(pending);
 
 只展示 `user_code` 和 sender 指纹，并在已登录的可信 App 中批准。账号 access token 只用于创建账号绑定授权，不能单独加密消息。不要打印完整 pending/config。
 
-CLI 或离线环境仍可使用手动账号根指纹流程：
-
-```java
-Client client = new Client(Path.of("/absolute/path/to/runtime/main.js"), trustedRootFingerprint, null);
-JSONObject pending = client.beginAuthorization("https://api.pushnow.dev", "Java automation");
-JSONObject config = client.authorize(pending);
-```
-
 ## 发送通知
 
 ```java
-Client client = new Client(Path.of("/absolute/path/to/runtime/main.js"), trustedRootFingerprint, config);
+Client client = new Client(Path.of("/absolute/path/to/runtime/main.js"), config);
 JSONObject result = client.send(new JSONObject()
     .put("title", "Build finished")
     .put("body", "Your report is ready.")
